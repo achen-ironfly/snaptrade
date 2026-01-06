@@ -18,7 +18,7 @@ The current code implements the following features:
 
 ## Requirements
 
-- Node.js (18+ recommended)
+- Node.js
 - TypeScript
 - node-fetch
 - Playwright
