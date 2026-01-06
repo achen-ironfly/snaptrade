@@ -31,7 +31,8 @@ The current code implements the following features:
 
 Install dependencies:  https://nodejs.org/
 ```text
-├── snaptrade.ts            # Main application entry
+├── src/
+│   └── snaptrade.ts       # Main application entry
 ├── .env                # Environment variables
 ├── package.json
 ├── tsconfig.json
@@ -67,3 +68,28 @@ npx ts-node .\src\snaptrade.ts
 
 ---
 
+---
+
+## Data Structure
+
+### Normalized Accounts
+- `id` - Account UUID
+- `name` - Account name
+- `balance` - Total account balance
+- `currency` - Currency code (e.g., USD)
+
+### Normalized Balances
+- `cash` - Cash balance
+- `currency` - Currency code
+
+### Normalized Transactions
+- `transactionId` - Transaction UUID
+- `transactionDate` - Transaction date (YYYY-MM-DD)
+- `time_local` - Local time 
+- `time_utc` - UTC time 
+- `amount` - Transaction amount 
+- `currency` - Currency code
+- `description` - Transaction description
+- `institution` - Financial institution name
+
+---
