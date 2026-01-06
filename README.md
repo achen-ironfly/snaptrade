@@ -68,8 +68,6 @@ npx ts-node .\src\snaptrade.ts
 
 ---
 
----
-
 ## Data Structure
 
 ### Normalized Accounts
