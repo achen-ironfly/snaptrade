@@ -1,0 +1,69 @@
+type ApiStatusResponse {
+    version: Int!
+    timestamp: String!
+    online: Boolean!
+}
+
+type Mutation {
+    registerUser(
+        userId: String!
+    ): AuthResponse!
+
+    generateConnectionUrl(
+        userId: String!, 
+        userSecret: String!
+    ): String!
+
+    connectAccount(
+        redirectURI: String!
+    ): Boolean!
+}
+
+type Query {
+    apiStatus: ApiStatusResponse!
+
+    accounts(
+        userId: String!, 
+        userSecret: String!
+    ): [Account!]!
+
+    accountBalances(
+        accountId: String!, 
+        userId: String!, 
+        userSecret: String!
+    ): [Balance!]!
+
+    accountActivities(
+        accountId: String!, 
+        userId: String!, 
+        userSecret: String!
+    ): [Transaction!]!
+}
+
+type AuthResponse {
+    userSecret: String!
+    message: String!
+}
+
+type Account {
+    id: String!
+    name: String!
+    balance: Float
+    currency: String
+}
+
+type Balance {
+    cash: Float!
+    currency: String!
+}
+
+type Transaction {
+    transactionId: String!
+    transactionDate: String!
+    time_local: String!
+    time_utc: String!
+    amount: Float!
+    currency: String!
+    description: String!
+    institution: String!
+}

@@ -54,6 +54,8 @@ async function getApiStatus() {
 
     const data = await response.json();
     console.log("API Status:", data);
+
+    return data;
 }
 
 // 2.--- Register User ---
@@ -343,3 +345,16 @@ async function main() {
 }
 
 main();
+
+export {
+    getApiStatus,
+    registerUser,
+    generateUrl,
+    connect,
+    listAccounts,
+    accountBalances,
+    accountActivities,
+    normalizeAccounts,
+    normalizeBalances,
+    normalizeTransactions
+};

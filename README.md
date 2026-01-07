@@ -13,6 +13,7 @@ The current code implements the following features:
 6. **Get Account Balances** – Fetch balances for a specific account
 7. **Get Account Activities** – Retrieve account activity and transaction history
 8. **Data Normalization** – Convert raw API responses into simplified, structured objects
+9. **GraphQL API** – Query and mutate SnapTrade data through a GraphQL endpoint
 
 ---
 
@@ -23,7 +24,8 @@ The current code implements the following features:
 - node-fetch
 - Playwright
 - dotenv
-- crypto 
+- crypto
+- graphql 
 
 ---
 
@@ -33,6 +35,10 @@ Install dependencies:  https://nodejs.org/
 ```text
 ├── src/
 │   └── snaptrade.ts       # Main application entry
+├── graphql/
+│   ├── server.ts              # GraphQL server setup
+│   ├── schema.graphql      
+│   └── resolvers.ts           
 ├── .env                # Environment variables
 ├── package.json
 ├── tsconfig.json
@@ -45,15 +51,107 @@ Install dependencies:  https://nodejs.org/
 npm init -y
 npm install node-fetch dotenv playwright
 npm install typescript ts-node @types/node
+npm install @apollo/server graphql
 ```
 
 ---
 
 ## Usage
 ```bash
-npx ts-node .\src\snaptrade.ts
+npm run dev
+```
+The GraphQL server will start on `http://localhost:4000`
+
+## GraphQL API Schema
+
+### 1. apiStatus
+Returns the API status information.
+```graphql
+query {
+    apiStatus {
+        version
+        timestamp
+        online
+    }
+}
 ```
 
+### 2. registerUser
+Register a new SnapTrade user.
+```graphql
+mutation {
+    registerUser(userId: "xxxxxx") {
+        userSecret
+        message
+    }
+}
+```
+
+### 3. generateConnectionUrl
+Create a connection portal URL.
+```graphql
+mutation {
+    generateConnectionUrl(
+        userId: "xxxxxx", 
+        userSecret: "xxxxxx"
+    )
+}
+```
+
+### 4. connectAccount
+Establish account connection via redirect URL, access connect account url: "https://example.com", select `Alpaca Paper` as the institution and complete the test connection. 
+
+### 5. accounts
+Fetch all linked accounts for a user.
+```graphql
+query {
+    accounts(
+        userId: "xxxxxx", 
+        userSecret: "xxxxxx"
+    ) {
+        id
+        name
+        balance
+        currency
+    }
+}
+```
+
+### 6. accountBalances
+Get balance information for a specific account.
+```graphql
+query {
+    accountBalances(
+        accountId: "xxxxxx", 
+        userId: "xxxxxx",
+        userSecret: "xxxxxx"
+    ) {
+        cash
+        currency
+    }
+}
+```
+
+### 7. accountActivities
+Retrieve transaction history for an account.
+```graphql
+query {
+    accountActivities(
+        accountId: "xxxxxx", 
+        userId: "xxxxxx", 
+        userSecret: "xxxxxx"
+    ) {
+        transactionId
+        transactionDate
+        time_local
+        time_utc
+        amount
+        currency
+        description
+        institution
+    }
+}
+```
 ---
 
 ## Execution Flow
@@ -65,29 +163,5 @@ npx ts-node .\src\snaptrade.ts
 - Once the URL is generated, select `Alpaca Paper` as the institution and complete the test connection. 
 4. **Fetch Accounts balances and activities (transactions)**
 5. **Output normalized data**
-
----
-
-## Data Structure
-
-### Normalized Accounts
-- `id` - Account UUID
-- `name` - Account name
-- `balance` - Total account balance
-- `currency` - Currency code (e.g., USD)
-
-### Normalized Balances
-- `cash` - Cash balance
-- `currency` - Currency code
-
-### Normalized Transactions
-- `transactionId` - Transaction UUID
-- `transactionDate` - Transaction date (YYYY-MM-DD)
-- `time_local` - Local time 
-- `time_utc` - UTC time 
-- `amount` - Transaction amount 
-- `currency` - Currency code
-- `description` - Transaction description
-- `institution` - Financial institution name
 
 ---
