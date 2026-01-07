@@ -144,13 +144,3 @@ query {
     }
 }
 ```
-
-## Execution Flow
-
-1. **Check API Status**
-2. **Ask for userId** 
-- Input any string used as a unique identifier.
-3. **Generate Connection URL**
-- Once the URL is generated, select `Alpaca Paper` as the institution and complete the test connection. 
-4. **Fetch Accounts balances and activities (transactions)**
-5. **Output normalized data**
