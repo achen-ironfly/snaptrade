@@ -31,7 +31,6 @@ The current code implements the following features:
 
 ## Project Structure
 
-Install dependencies:  https://nodejs.org/
 ```text
 ├── src/
 │   └── snaptrade.ts       # Main application entry
@@ -47,6 +46,7 @@ Install dependencies:  https://nodejs.org/
 
 ## Installation
 
+Install dependencies:  https://nodejs.org/
 ```bash
 npm init -y
 npm install node-fetch dotenv playwright
