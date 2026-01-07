@@ -1,6 +1,4 @@
 # SnapTrade 
----
-
 ## Features Overview
 
 The current code implements the following features:
@@ -15,8 +13,6 @@ The current code implements the following features:
 8. **Data Normalization** – Convert raw API responses into simplified, structured objects
 9. **GraphQL API** – Query and mutate SnapTrade data through a GraphQL endpoint
 
----
-
 ## Requirements
 
 - Node.js
@@ -26,8 +22,6 @@ The current code implements the following features:
 - dotenv
 - crypto
 - graphql 
-
----
 
 ## Project Structure
 
@@ -53,8 +47,6 @@ npm install node-fetch dotenv playwright
 npm install typescript ts-node @types/node
 npm install @apollo/server graphql
 ```
-
----
 
 ## Usage
 ```bash
@@ -152,7 +144,6 @@ query {
     }
 }
 ```
----
 
 ## Execution Flow
 
@@ -163,5 +154,3 @@ query {
 - Once the URL is generated, select `Alpaca Paper` as the institution and complete the test connection. 
 4. **Fetch Accounts balances and activities (transactions)**
 5. **Output normalized data**
-
----
