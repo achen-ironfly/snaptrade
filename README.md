@@ -35,10 +35,10 @@ The current code implements the following features:
 ├── src/
 │   └── snaptrade.ts       # Main application entry
 ├── graphql/
-│   ├── server.ts              # GraphQL server setup
+│   ├── server.ts          # GraphQL server setup
 │   ├── schema.graphql      
 │   └── resolvers.ts           
-├── .env                # Environment variables
+├── .env                   # Environment variables
 ├── package.json
 ├── tsconfig.json
 └── README.md
