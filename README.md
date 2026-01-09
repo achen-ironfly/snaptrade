@@ -56,19 +56,7 @@ The GraphQL server will start on `http://localhost:4000`
 
 ## GraphQL API Schema
 
-### 1. apiStatus
-Returns the API status information.
-```graphql
-query {
-    apiStatus {
-        version
-        timestamp
-        online
-    }
-}
-```
-
-### 2. registerUser
+### 1. registerUser
 Register a new SnapTrade user.
 ```graphql
 mutation {
@@ -79,7 +67,7 @@ mutation {
 }
 ```
 
-### 3. generateConnectionUrl
+### 2. generateConnectionUrl
 Create a connection portal URL.
 ```graphql
 mutation {
@@ -90,57 +78,34 @@ mutation {
 }
 ```
 
-### 4. connectAccount
+### 3. connectAccount
 Establish account connection via redirect URL, access connect account url: "https://example.com", select `Alpaca Paper` as the institution and complete the test connection. 
 
-### 5. accounts
-Fetch all linked accounts for a user.
+### 4. account
+Fetch linked account for a user.
 ```graphql
 query {
-    accounts(
-        userId: "xxxxxx", 
-        userSecret: "xxxxxx"
-    ) {
+    Account {
         id
         name
+        currency
         balance
-        currency
     }
 }
 ```
 
-### 6. accountBalances
-Get balance information for a specific account.
-```graphql
-query {
-    accountBalances(
-        accountId: "xxxxxx", 
-        userId: "xxxxxx",
-        userSecret: "xxxxxx"
-    ) {
-        cash
-        currency
-    }
-}
-```
-
-### 7. accountActivities
+### 5. transaction
 Retrieve transaction history for an account.
 ```graphql
 query {
-    accountActivities(
-        accountId: "xxxxxx", 
-        userId: "xxxxxx", 
-        userSecret: "xxxxxx"
-    ) {
+    Transaction(id: "xxxxxx") {
         transactionId
-        transactionDate
-        time_local
-        time_utc
+        transactionTime
         amount
         currency
         description
-        institution
+        status
+        balance
     }
 }
 ```
