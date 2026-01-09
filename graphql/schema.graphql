@@ -36,11 +36,6 @@ type transaction {
 type account {
     id: String
     name: String
-    balance: Balance
+    balance: Float
     currency: String
-}
-
-type Balance {
-    cash: Float
-    total: Float
 }

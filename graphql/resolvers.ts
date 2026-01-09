@@ -70,7 +70,6 @@ export const resolvers = {
             const targetAccount = args.id
                 ? accounts.find((a: any) => a.id === args.id) ?? accounts[0]
                 : accounts[0];
-
             const balances = await accountBalances(targetAccount.id, userId, userSecret);
             const normalized = normalizeAccounts([targetAccount], balances);
 
@@ -82,29 +81,27 @@ export const resolvers = {
             };
 },
 
-    Transaction: async (_: any, args: { id: string },context: Context) => {
-      const { userId, userSecret } = context;
-      if (!userId || !userSecret) {
-        throw new Error("userId and userSecret are required in context");
-      }
+        Transaction: async (_: any, args: { id: string },context: Context) => {
+        const { userId, userSecret } = context;
+        if (!userId || !userSecret) {
+            throw new Error("userId and userSecret are required in context");
+        }
+        const activities = await accountActivities(
+            args.id,
+            userId,
+            userSecret
+        );
+        const transactions = normalizeTransactions(activities?.data || []);
 
-      const activities = await accountActivities(
-        args.id,
-        userId,
-        userSecret
-      );
-
-      const transactions = normalizeTransactions(activities?.data || []);
-
-      return transactions.map((tx: any) => ({
-        transactionId: tx.transactionId,
-        transactionTime: tx.transactionTime,
-        amount: tx.amount,
-        currency: tx.currency,
-        description: tx.description,
-        status: tx.status,
-        balance: tx.balance,
-      }));
+        return transactions.map((tx: any) => ({
+            transactionId: tx.transactionId,
+            transactionTime: tx.transactionTime,
+            amount: tx.amount,
+            currency: tx.currency,
+            description: tx.description,
+            status: tx.status,
+            balance: tx.balance,
+        }));
+        },
     },
-  },
 };

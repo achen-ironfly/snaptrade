@@ -285,7 +285,8 @@ function normalizeAccounts(accounts: any[], balances: any[] = []): any[] {
         return {
             id: account.id,
             name: account.name,
-            balance: { cash, total },
+            // balance: { cash, total },
+            balance: total,
             currency
         };
     });
@@ -293,9 +294,13 @@ function normalizeAccounts(accounts: any[], balances: any[] = []): any[] {
 
 // 9.--- Normalize Transactions Data ---
 function normalizeTransactions(transactions: any[]): any[] {
-    return transactions.map(transaction => {
+    const reverse_transactions = [...transactions].reverse();
+    let balance = 0;
+    
+    const final_transactions = reverse_transactions.map(transaction => {
         const date = new Date(transaction.settlement_date);
-        const transactionDate = date.toISOString().replace('T', ' ').split('.')[0]; 
+        const transactionDate = date.toISOString().replace('T', ' ').split('.')[0];
+        balance = parseFloat((balance + transaction.amount).toFixed(2));
 
         return {
             transactionId: transaction.id,
@@ -304,9 +309,11 @@ function normalizeTransactions(transactions: any[]): any[] {
             currency: transaction.currency?.code,
             description: transaction.description,
             status: transaction.status || null,
-            balance: transaction.balance || null
+            balance: balance
         };
     });
+    
+    return final_transactions.reverse();
 }
 
 async function main() {
