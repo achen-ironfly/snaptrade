@@ -15,7 +15,14 @@ export async function createGraphQLServer(app: any) {
         resolvers,
     });
 
-    const { url } = await startStandaloneServer(server, { listen: { port: 4000 } });
-        console.log(`GraphQL Server running at ${url}`);
+    const { url } = await startStandaloneServer(server, { 
+        listen: { port: 4000 },
+        context: async ({ req }) => {
+            const userId = req.headers['userid'] as string;
+            const userSecret = req.headers['usersecret'] as string;
+            return { userId, userSecret };
+        },
+        });
+    console.log(`GraphQL Server running at ${url}`);
 }
 createGraphQLServer({}).catch(console.error);

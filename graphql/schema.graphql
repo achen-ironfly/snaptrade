@@ -1,69 +1,46 @@
-type ApiStatusResponse {
-    version: Int!
-    timestamp: String!
-    online: Boolean!
-}
-
 type Mutation {
     registerUser(
-        userId: String!
-    ): AuthResponse!
+        userId: String
+    ): AuthResponse
 
     generateConnectionUrl(
-        userId: String!, 
-        userSecret: String!
-    ): String!
+        userId: String, 
+        userSecret: String
+    ): String
 
     connectAccount(
-        redirectURI: String!
-    ): Boolean!
-}
-
-type Query {
-    apiStatus: ApiStatusResponse!
-
-    accounts(
-        userId: String!, 
-        userSecret: String!
-    ): [Account!]!
-
-    accountBalances(
-        accountId: String!, 
-        userId: String!, 
-        userSecret: String!
-    ): [Balance!]!
-
-    accountActivities(
-        accountId: String!, 
-        userId: String!, 
-        userSecret: String!
-    ): [Transaction!]!
+        redirectURI: String
+    ): Boolean
 }
 
 type AuthResponse {
-    userSecret: String!
-    message: String!
+    userSecret: String
+    message: String
 }
 
-type Account {
-    id: String!
-    name: String!
+type Query {
+    Account(id: String): account
+    Transaction(id: String): [transaction]
+}
+
+type transaction {
+    transactionId: ID
+    transactionTime: String
+    amount: Float
+    currency: String
+    description: String
+    status: String
     balance: Float
+}
+
+type account {
+    id: String
+    name: String
+    balance: Balance
     currency: String
 }
 
 type Balance {
-    cash: Float!
-    currency: String!
-}
-
-type Transaction {
-    transactionId: String!
-    transactionDate: String!
-    time_local: String!
-    time_utc: String!
-    amount: Float!
-    currency: String!
-    description: String!
-    institution: String!
+    cash: Float
+    total: Float
 }

@@ -1,47 +1,21 @@
-import { getApiStatus, listAccounts, accountBalances, accountActivities, registerUser, generateUrl, connect } from '../src/snaptrade'; // Adjust the import path based on your project structure
-import { normalizeAccounts, normalizeBalances, normalizeTransactions } from '../src/snaptrade'; 
+import {
+  registerUser,
+  generateUrl,
+  connect,
+  listAccounts,
+  accountActivities,
+  normalizeAccounts,
+  normalizeTransactions,
+  accountBalances,
+} from '../src/snaptrade';
+
+interface Context {
+  userId?: string;
+  userSecret?: string;
+}
 
 export const resolvers = {
-    Query: {
-        apiStatus: async () => {
-            try {
-                const data = await getApiStatus();
-                return data;
-            } catch (error: any) {
-                throw new Error(`Failed to get API status: ${error.message}`);
-            }
-        },
-
-        accounts: async (_: any, { userId, userSecret }: any) => {
-            try {
-                const accounts = await listAccounts(userId, userSecret);
-                return normalizeAccounts(accounts);
-            } catch (error: any) {
-                throw new Error(`Failed to fetch accounts: ${error.message}`);
-            }
-        },
-
-        accountBalances: async (_: any, { accountId, userId, userSecret }: any) => {
-            try {
-                const balances = await accountBalances(accountId, userId, userSecret);
-                return normalizeBalances(balances);
-            } catch (error: any) {
-                throw new Error(`Failed to fetch balances: ${error.message}`);
-            }
-        },
-
-        accountActivities: async (_: any, { accountId, userId, userSecret }: any) => {
-            try {
-                const activities = await accountActivities(accountId, userId, userSecret);
-                const transactionsData = activities?.data || [];
-                return normalizeTransactions(transactionsData);
-            } catch (error: any) {
-                throw new Error(`Failed to fetch activities: ${error.message}`);
-            }
-        },
-    },
-
-    Mutation: {
+      Mutation: {
         registerUser: async (_: any, { userId }: any) => {
             try {
                 if (!userId || userId.trim() === "") {
@@ -82,4 +56,55 @@ export const resolvers = {
             }
         },
     },
+
+    Query: {
+        Account: async (_: any, args: { id?: string }, context: Context) => {
+        const { userId, userSecret } = context;
+        if (!userId || !userSecret) {
+            throw new Error("userId and userSecret are required in context");
+        }
+
+        const accounts = await listAccounts(userId, userSecret);
+            if (!accounts || accounts.length === 0) return null;
+
+            const targetAccount = args.id
+                ? accounts.find((a: any) => a.id === args.id) ?? accounts[0]
+                : accounts[0];
+
+            const balances = await accountBalances(targetAccount.id, userId, userSecret);
+            const normalized = normalizeAccounts([targetAccount], balances);
+
+            return {
+                id: normalized[0].id,
+                name: normalized[0].name,
+                currency: normalized[0].currency,
+                balance: normalized[0].balance,
+            };
+},
+
+    Transaction: async (_: any, args: { id: string },context: Context) => {
+      const { userId, userSecret } = context;
+      if (!userId || !userSecret) {
+        throw new Error("userId and userSecret are required in context");
+      }
+
+      const activities = await accountActivities(
+        args.id,
+        userId,
+        userSecret
+      );
+
+      const transactions = normalizeTransactions(activities?.data || []);
+
+      return transactions.map((tx: any) => ({
+        transactionId: tx.transactionId,
+        transactionTime: tx.transactionTime,
+        amount: tx.amount,
+        currency: tx.currency,
+        description: tx.description,
+        status: tx.status,
+        balance: tx.balance,
+      }));
+    },
+  },
 };

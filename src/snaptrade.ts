@@ -266,45 +266,45 @@ async function accountActivities(accountId: string, userId: string, userSecret: 
 }
 
 // 8.--- Normalize Accounts Data ---
-function normalizeAccounts(accounts: any[]): any[] {
-    return accounts.map(account => ({
-        id: account.id,
-        name: account.name,
-        balance: account.balance?.total?.amount,
-        currency: account.balance?.total?.currency
-    }));
+function normalizeAccounts(accounts: any[], balances: any[] = []): any[] {
+    return accounts.map(account => {
+        let cash: number | null = null;
+        let currency: string | null = null;
+
+        if (Array.isArray(balances) && balances.length > 0) {
+            const balanceItem = balances.find(b => true); 
+            cash = balanceItem?.cash ?? null;
+            currency = balanceItem?.currency?.code ?? null;
+        }
+
+        const total = account.balance?.total?.amount ?? null;
+        if (!currency) {
+            currency = account.balance?.total?.currency ?? null;
+        }
+
+        return {
+            id: account.id,
+            name: account.name,
+            balance: { cash, total },
+            currency
+        };
+    });
 }
 
-// 9.--- Normalize Balance Data ---
-function normalizeBalances(balances: any[]): any[] {
-    return balances.map(balance => ({
-        cash: balance.cash,
-        currency: balance?.currency?.code
-    }));
-}
-
-// 10.--- Normalize Transactions Data ---
+// 9.--- Normalize Transactions Data ---
 function normalizeTransactions(transactions: any[]): any[] {
     return transactions.map(transaction => {
-        const settlementDate = new Date(transaction.settlement_date);
-        const transactionDate = settlementDate.toISOString().split('T')[0]; 
-        const timeUtc = settlementDate.toISOString().split('T')[1].split('.')[0]; 
-        const timeLocal = settlementDate.toLocaleTimeString('en-US', { 
-            hour12: false,
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit'
-        }); 
+        const date = new Date(transaction.settlement_date);
+        const transactionDate = date.toISOString().replace('T', ' ').split('.')[0]; 
 
         return {
             transactionId: transaction.id,
-            transactionDate: transactionDate,
-            time_local: timeLocal,
-            time_utc: timeUtc,
+            transactionTime: transactionDate,
             amount: transaction.amount,
             currency: transaction.currency?.code,
             description: transaction.description,
-            institution: transaction.institution
+            status: transaction.status || null,
+            balance: transaction.balance || null
         };
     });
 }
@@ -324,12 +324,11 @@ async function main() {
 
     console.log("\n--- List Accounts ---");
     const accounts = await listAccounts(userId, userSecret);
-    const normalizedAccounts = normalizeAccounts(accounts);
     const accountId = accounts[0].id;
 
     console.log("\n--- List Account Balances ---");
     const balances = await accountBalances(accountId, userId, userSecret);
-    const normalizedBalances = normalizeBalances(balances);
+    const normalizedAccounts = normalizeAccounts(accounts);
 
     console.log("\n--- List Account Activities ---");
     const activities = await accountActivities(accountId, userId, userSecret);
@@ -338,7 +337,6 @@ async function main() {
 
     console.log("\n--- Normalized data ---");
     console.log("Normalized Accounts:", normalizedAccounts);
-    console.log("Normalized Balances:", normalizedBalances);
     console.log("Normalized Transactions:", normalizedTransactions);
 
     process.exit(0);
@@ -355,6 +353,5 @@ export {
     accountBalances,
     accountActivities,
     normalizeAccounts,
-    normalizeBalances,
     normalizeTransactions
 };
