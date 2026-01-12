@@ -65,21 +65,23 @@ export const resolvers = {
         }
 
         const accounts = await listAccounts(userId, userSecret);
-            if (!accounts || accounts.length === 0) return null;
+        if (!accounts || accounts.length === 0) return null;
 
-            const targetAccount = args.id
-                ? accounts.find((a: any) => a.id === args.id) ?? accounts[0]
-                : accounts[0];
-            const balances = await accountBalances(targetAccount.id, userId, userSecret);
-            const normalized = normalizeAccounts([targetAccount], balances);
+        const targetAccount = args.id
+            ? accounts.find((a: any) => a.id === args.id) ?? accounts[0]
+            : accounts[0];
+        const balances = await accountBalances(targetAccount.id, userId, userSecret);
+        const normalized = normalizeAccounts([targetAccount], balances);
 
-            return {
+        return [
+            {
                 id: normalized[0].id,
                 name: normalized[0].name,
                 currency: normalized[0].currency,
                 balance: normalized[0].balance,
-            };
-},
+            }
+        ];
+    },
 
         Transaction: async (_: any, args: { id: string },context: Context) => {
         const { userId, userSecret } = context;

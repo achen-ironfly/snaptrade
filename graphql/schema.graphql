@@ -19,7 +19,7 @@ type AuthResponse {
 }
 
 type Query {
-    Account(id: String): account
+    Account(id: String): [account]
     Transaction(id: String): [transaction]
 }
 
