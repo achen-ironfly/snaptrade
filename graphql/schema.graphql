@@ -1,29 +1,21 @@
 type Mutation {
-    registerUser(
-        userId: String
-    ): AuthResponse
-
-    generateConnectionUrl(
-        userId: String, 
-        userSecret: String
-    ): String
-
-    connectAccount(
-        redirectURI: String
-    ): Boolean
+    authenticate(
+        id: String
+        password: String
+    ): Authresponse
 }
 
-type AuthResponse {
-    userSecret: String
+type Authresponse {
     message: String
+    url: String
 }
 
 type Query {
-    Account(id: String): [account]
-    Transaction(id: String): [transaction]
+    account(id: String): [Account]
+    transaction(id: String): [Transaction]
 }
 
-type transaction {
+type Transaction {
     transactionId: ID
     transactionTime: String
     amount: Float
@@ -33,7 +25,7 @@ type transaction {
     balance: Float
 }
 
-type account {
+type Account {
     id: String
     name: String
     balance: Float
