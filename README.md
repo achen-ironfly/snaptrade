@@ -60,32 +60,21 @@ The GraphQL server will start on `http://localhost:4000`
 Register a new SnapTrade user.
 ```graphql
 mutation {
-    registerUser(userId: "xxxxxx") {
-        userSecret
+    authenticate(userId: "xxxxxx") {
         message
+        url
     }
 }
 ```
 
-### 2. generateConnectionUrl
-Create a connection portal URL.
-```graphql
-mutation {
-    generateConnectionUrl(
-        userId: "xxxxxx", 
-        userSecret: "xxxxxx"
-    )
-}
-```
-
-### 3. connectAccount
+### 2. connectAccount
 Establish account connection via redirect URL, access connect account url: "https://example.com", select `Alpaca Paper` as the institution and complete the test connection. 
 
-### 4. account
+### 3. account
 Fetch linked account for a user.
 ```graphql
 query {
-    Account {
+    account {
         id
         name
         currency
@@ -94,11 +83,11 @@ query {
 }
 ```
 
-### 5. transaction
+### 4. transaction
 Retrieve transaction history for an account.
 ```graphql
 query {
-    Transaction(id: "xxxxxx") {
+    transaction(id: "xxxxxx") {
         transactionId
         transactionTime
         amount
