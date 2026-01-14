@@ -60,10 +60,10 @@ The GraphQL server will start on `http://localhost:4000`
 Register a new SnapTrade user.
 ```graphql
 mutation {
-    authenticate(userId: "xxxxxx") {
-        message
-        url
-    }
+    auth(payload: { id: "xxxxxx" }) {
+        response
+        identifier
+    }   
 }
 ```
 
@@ -87,7 +87,7 @@ query {
 Retrieve transaction history for an account.
 ```graphql
 query {
-    transaction(id: "xxxxxx") {
+    transaction(identifier: "xxxxxx") {
         transactionId
         transactionTime
         amount

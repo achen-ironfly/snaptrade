@@ -18,31 +18,31 @@ let authStore: { userId?: string; userSecret?: string } = {};
 
 export const resolvers = {
     Mutation: {
-        authenticate: async (_: any, { id, password }: any) => {
-            if (!id || id.trim() === "") {
-                throw new Error("id cannot be empty");
+        auth: async (_: any, { payload }: any) => {
+            if (!payload || !payload.id || payload.id.trim() === "") {
+                throw new Error("payload.id cannot be empty");
             }
                 
-            const userSecret = await registerUser(id);
+            const userSecret = await registerUser(payload.id);
             if (!userSecret) {
                 throw new Error("Failed to register user");
             }
                 
-            const url = await generateUrl(id, userSecret);
+            const url = await generateUrl(payload.id, userSecret);
             authStore = {
-                userId: id,
+                userId: payload.id,
                 userSecret: userSecret
             };
                 
             return {
-                message: "Authentication successful",
-                url: url
+                response: url,
+                identifier: null
             };
         } 
     },
 
     Query: {
-        account: async (_: any, args: { id?: string }, context: Context) => {
+        account: async (_: any, args: { identifier?: string }, context: Context) => {
             const userId = authStore.userId || context.userId;
             const userSecret = authStore.userSecret || context.userSecret;
             
@@ -53,8 +53,8 @@ export const resolvers = {
             const accounts = await listAccounts(userId, userSecret);
             if (!accounts || accounts.length === 0) return [];
 
-            const targetAccount = args.id
-                ? accounts.find((a: any) => a.id === args.id) ?? accounts[0]
+            const targetAccount = args.identifier
+                ? accounts.find((a: any) => a.id === args.identifier) ?? accounts[0]
                 : accounts[0];
             const balances = await accountBalances(targetAccount.id, userId, userSecret);
             const normalized = normalizeAccounts([targetAccount], balances);
@@ -69,7 +69,7 @@ export const resolvers = {
             ];
         },
 
-        transaction: async (_: any, args: { id: string }, context: Context) => {
+        transaction: async (_: any, args: { identifier: string }, context: Context) => {
             const userId = authStore.userId || context.userId;
             const userSecret = authStore.userSecret || context.userSecret;
             
@@ -78,7 +78,7 @@ export const resolvers = {
             }
             
             const activities = await accountActivities(
-                args.id,
+                args.identifier,
                 userId,
                 userSecret
             );
